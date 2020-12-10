@@ -73,7 +73,7 @@ fn find_xmas_encryption_weakness(numbers: &Vec<i64>, anomaly: i64) -> Option<i64
 
 #[cfg(test)]
 mod tests {
-    use crate::day9::*;
+    use crate::day09::*;
 
     #[test]
     fn test_find_xmas_anomaly() {

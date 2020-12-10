@@ -4,7 +4,7 @@ use std::fs;
 
 #[cfg(test)]
 mod tests {
-    use crate::day5::*;
+    use crate::day05::*;
 
     #[test]
     fn test1() {

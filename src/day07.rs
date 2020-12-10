@@ -120,7 +120,7 @@ impl BagRule {
 
 #[cfg(test)]
 mod tests {
-    use crate::day7::*;
+    use crate::day07::*;
 
     #[test]
     fn test1() {

@@ -2,7 +2,7 @@ use std::fs;
 
 #[cfg(test)]
 mod tests {
-    use crate::day3::*;
+    use crate::day03::*;
 
     #[test]
     fn is_tree_at_position_expected() {

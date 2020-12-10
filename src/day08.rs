@@ -1,4 +1,4 @@
-use crate::day8::Instruction::*;
+use crate::day08::Instruction::*;
 use std::fs;
 
 pub fn run() -> (i32, i32) {
@@ -177,7 +177,7 @@ enum Instruction {
 
 #[cfg(test)]
 mod tests {
-    use crate::day8::*;
+    use crate::day08::*;
 
     #[test]
     fn test_program() {
