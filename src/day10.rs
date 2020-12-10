@@ -36,8 +36,8 @@ fn get_sorted_adaptors(input: &str) -> Vec<usize> {
 }
 
 // This function allows for adaptors to work with a given max difference in joltage
-// rather than being hard-coded to 3. It also counts all dfferences not assuming they 
-// will always be 1s or 3s.
+// rather than being hard-coded to 3. It also counts all dfferences rather than assume 
+// they will always be 1s or 3s.
 fn count_differences(adaptors: &Vec<usize>, max_diff: usize) -> Vec<usize> {
     let mut results = vec![0; max_diff + 1];
     for window in adaptors.windows(2) {
@@ -69,7 +69,7 @@ fn count_valid_combinations(nums: &[usize]) -> usize {
         .windows(2)
         .collect::<Vec<_>>()
         .split(|n| n[1] - n[0] == 3)
-        .filter(|n| n.len() > 0)
+        .filter(|n| n.len() > 1)
         .map(|n| combinations(n.len()))
         .product::<usize>()    
 }
