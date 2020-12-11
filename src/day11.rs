@@ -2,19 +2,7 @@ use std::fs;
 
 pub fn run() -> (usize, usize) {
 
-    //let input = fs::read_to_string("input/day10.txt").unwrap();
-
-    let input = 
-          r"L.LL.LL.LL
-            LLLLLLL.LL
-            L.L.L..L..
-            LLLL.LL.LL
-            L.LL.LL.LL
-            L.LLLLL.LL
-            ..L.L.....
-            LLLLLLLLLL
-            L.LLLLLL.L
-            L.LLLLL.LL";
+    let input = fs::read_to_string("input/day11.txt").unwrap();
 
     let mut floor_plan = load_floor_plan(&input);
 
@@ -84,7 +72,7 @@ fn play_round(floor_plan: &Vec<Vec<Space>>, new_floor_plan: &mut Vec<Vec<Space>>
                 Space::Occupied => if more_than_3_adjacent_seats_occupied(&floor_plan, x, y) { has_changed = true; Space::Empty } else { Space::Occupied }
             };
 
-            new_floor_plan[y][y] = space;
+            new_floor_plan[y][x] = space;
         }
     }
 
