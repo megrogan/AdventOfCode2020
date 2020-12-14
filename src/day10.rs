@@ -62,7 +62,11 @@ fn count_differences(adaptors: &Vec<usize>, max_diff: usize) -> Vec<usize> {
 fn count_valid_combinations(nums: &[usize]) -> usize {
 
     fn combinations(n: usize) -> usize {
-        1 + (((n - 1) * n) / 2)
+        match n {
+            0 | 1 => 1,
+            2 => 2,
+            i => combinations(i-1) + combinations(i-2) + combinations(i-3)
+        }
     }
 
     nums

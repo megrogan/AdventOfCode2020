@@ -76,11 +76,11 @@ fn count_occupied(floor_plan: &Vec<Vec<Space>>) -> usize {
         .count()
 }
 
-fn compare_floor_plans(fp1: &Vec<Vec<Space>>, fp2: &Vec<Vec<Space>>) -> bool {
-    let fp1 = fp1.iter().flatten();
-    let fp2 = fp2.iter().flatten();
-    fp1.zip(fp2).all(|(s1,s2)| *s1 == *s2)
-}
+// fn compare_floor_plans(fp1: &Vec<Vec<Space>>, fp2: &Vec<Vec<Space>>) -> bool {
+//     let fp1 = fp1.iter().flatten();
+//     let fp2 = fp2.iter().flatten();
+//     fp1.zip(fp2).all(|(s1,s2)| *s1 == *s2)
+// }
 
 trait SeatingPolicy {
     fn should_become_empty(&self, floor_plan: &Vec<Vec<Space>>, x: usize, y: usize) -> bool;

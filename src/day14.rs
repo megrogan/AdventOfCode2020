@@ -113,7 +113,7 @@ mod part1 {
         use crate::day14::*;
     
         #[test]
-        fn test_run_program() {
+        fn test_program_1() {
             let input = r"
 mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
 mem[8] = 11
