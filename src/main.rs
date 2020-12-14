@@ -16,6 +16,8 @@ mod day09;
 mod day10; 
 mod day11; 
 mod day12; 
+mod day13; 
+mod day14; 
 
 fn main() {
     env_logger::init();
@@ -37,6 +39,8 @@ fn main() {
     run_day("day10", &day10::run, day_or_all);
     run_day("day11", &day11::run, day_or_all);
     run_day("day12", &day12::run, day_or_all);
+    run_day("day13", &day13::run, day_or_all);
+    run_day("day14", &day14::run, day_or_all);
 }
 
 fn run_day<T>(name: &str, f: & dyn Fn() -> T, day_or_all: &str) where T: Debug {

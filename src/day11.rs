@@ -25,8 +25,6 @@ fn count_occupied_in_steady_state(floor_plan: &mut Vec<Vec<Space>>, seating_poli
 
         if i % 1000 == 0 {
             log::debug!("{} iterations", i);
-
-            println!("{} iterations", i)
         }
     }
 
