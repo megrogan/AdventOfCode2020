@@ -6,12 +6,12 @@ pub fn run() -> (usize, usize) {
     let starting_numbers: Vec<usize> = input.split(",").map(|n| n.parse().unwrap()).collect();
 
     (
-        solve_part1(&starting_numbers, 2020),
-        solve_part1(&starting_numbers, 30000000),
+        solve(&starting_numbers, 2020),
+        0//solve(&starting_numbers, 30000000),
     )
 }
 
-fn solve_part1(starting_numbers: &Vec<usize>, n: usize) -> usize {
+fn solve(starting_numbers: &Vec<usize>, n: usize) -> usize {
 
     let mut last_seen: HashMap<usize, usize> = starting_numbers
         .iter()
@@ -25,7 +25,7 @@ fn solve_part1(starting_numbers: &Vec<usize>, n: usize) -> usize {
     for i in starting_numbers.len()..n {
         let new = match last_turn {
             None => 0,
-            Some(turn) => (i - 1) - *turn
+            Some(lt) => (i - 1) - *lt
         };
 
         last_seen.insert(last, i - 1);
@@ -35,6 +35,3 @@ fn solve_part1(starting_numbers: &Vec<usize>, n: usize) -> usize {
 
     last
 }
-
-
-

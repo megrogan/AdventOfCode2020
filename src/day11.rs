@@ -253,7 +253,7 @@ mod tests {
     }
 
     #[test]
-    fn test_count_occupied_in_steady_state_with_visibilty_poplicy() {
+    fn test_count_occupied_in_steady_state_with_visibilty_policy() {
         let input = 
           r"L.LL.LL.LL
             LLLLLLL.LL
