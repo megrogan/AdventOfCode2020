@@ -192,7 +192,8 @@ mod part2 {
 
             let s = initial_region.len();
 
-            // Calculate the dimensions of the final region
+            // Calculate the dimensions of the final region 
+            // add extra space all around so the neighbours can't be out of bouinds
             let d = 2 + s + 6 * 2;
 
             // Initialize the array with '.'s
