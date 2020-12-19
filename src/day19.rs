@@ -2,16 +2,18 @@
 use crate::day19::Rule::*;
 use std::fs;
 
-pub fn run() -> (usize, u64) {
+pub fn run() -> (usize, usize) {
     let input = fs::read_to_string("input/day19.txt").unwrap();
-
     let (rule_set, messages) = parse(&input);
+    let part1 = count_matches(&rule_set, &messages);
 
-    let part1 = count_matches(rule_set, messages);
+    let input = fs::read_to_string("input/day19_part2.txt").unwrap();
+    let (rule_set, messages) = parse(&input);
+    let part2 = count_matches(&rule_set, &messages);
 
     (
         part1,
-        0
+        part2
     )
 }
 
@@ -40,7 +42,7 @@ fn parse(input: &str) -> (RuleSet, Vec<String>) {
     )
 }
 
-fn count_matches(rule_set: RuleSet, messages: Vec<String>) -> usize {
+fn count_matches(rule_set: &RuleSet, messages: &Vec<String>) -> usize {
     messages
         .iter()
         .filter(|m| rule_set.is_match(m))
@@ -62,9 +64,47 @@ struct RuleSet {
 impl RuleSet {
     fn parse(input: &str) -> RuleSet {
         
+        fn parse_line(line: &str) -> Option<(usize, Rule)> {
+
+            let line = line.trim();
+            if line.len() == 0 {
+                return None
+            }
+    
+            let mut parts = line.split(":");
+            Some((
+                parts.next().unwrap().parse().unwrap(),
+                parse_rule(parts.next().unwrap().trim())
+            ))
+        }
+    
+        fn parse_rule(text: &str) -> Rule {
+            if text.contains("\"") {
+                let letter = text.replace("\"", "").chars().next().unwrap();
+                Rule::Letter(letter)
+            } else if text.contains("|") {
+                let mut parts = text.split("|");
+    
+                Rule::Or(
+                    Box::new(Seq(parse_seq(parts.next().unwrap()))),
+                    Box::new(Seq(parse_seq(parts.next().unwrap())))
+                )
+            } else {
+                Rule::Seq(parse_seq(text))
+            }
+        }
+    
+        fn parse_seq(text: &str) -> Vec<usize> {
+            text
+                .trim()
+                .split_whitespace()
+                .map(|s| s.parse().unwrap())
+                .collect()
+        }
+    
         let mut rules: Vec<(usize, Rule)> = input
             .lines()
-            .filter_map(RuleSet::parse_line)
+            .filter_map(parse_line)
             .collect();
 
         rules.sort_unstable_by_key(|p| p.0);
@@ -75,11 +115,16 @@ impl RuleSet {
     }
 
     fn is_match(&self, message: &str) -> bool {
-        let result = self.solve(&self.rules[0], message);
+        let result = self.solve(&self.rules[0], message, 0);
         result.is_some() && result.unwrap().len() == 0
     }
 
-    fn solve<'a>(&self, rule: &Rule, message: &'a str) -> Option<&'a str> {
+    fn solve<'a>(&self, rule: &Rule, message: &'a str, depth: usize) -> Option<&'a str> {
+
+        if depth > 50 {
+            println!("Too deep");
+            return None;
+        }
 
         let s = message.len();
     
@@ -99,63 +144,19 @@ impl RuleSet {
                 let mut m = message;
                 for i in v {
                     let r = &self.rules[*i];
-                    let result = self.solve(r, m);
-                    if result.is_none() {
-                        return None;
-                    }
-                    m = result.unwrap();
+                    m = self.solve(r, m, depth + 1)?;
                 }
                 Some(m)
             },
             Or(r1, r2) => {
-    
-                let result = self.solve(r1, message);
-                if result.is_some() {
-                    return result;
+                let result = self.solve(r1, message, depth + 1);
+                if result.is_some() { 
+                    return result; 
                 } 
-    
-                self.solve(r2, message)
+                self.solve(r2, message, depth + 1)
             }
         }
     }    
-
-    fn parse_line(line: &str) -> Option<(usize, Rule)> {
-
-        let line = line.trim();
-        if line.len() == 0 {
-            return None
-        }
-
-        let mut parts = line.split(":");
-        Some((
-            parts.next().unwrap().parse().unwrap(),
-            RuleSet::parse_rule(parts.next().unwrap().trim())
-        ))
-    }
-
-    fn parse_rule(text: &str) -> Rule {
-        if text.contains("\"") {
-            let letter = text.replace("\"", "").chars().next().unwrap();
-            Rule::Letter(letter)
-        } else if text.contains("|") {
-            let mut parts = text.split("|");
-
-            Rule::Or(
-                Box::new(Rule::Seq(RuleSet::parse_seq(parts.next().unwrap()))),
-                Box::new(Rule::Seq(RuleSet::parse_seq(parts.next().unwrap())))
-            )
-        } else {
-            Rule::Seq(RuleSet::parse_seq(text))
-        }
-    }
-
-    fn parse_seq(text: &str) -> Vec<usize> {
-        text
-            .trim()
-            .split_whitespace()
-            .map(|s| s.parse().unwrap())
-            .collect()
-    }
 }
 
 #[cfg(test)]
@@ -178,5 +179,62 @@ aba
         let result = rule_set.is_match(&messages[0]);
 
         assert!(result);
+    }
+
+    #[test]
+    fn test_rules_2() {
+        let input = r#"
+42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: "a"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: "b"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
+
+abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa
+bbabbbbaabaabba
+babbbbaabbbbbabbbbbbaabaaabaaa
+aaabbbbbbaaaabaababaabababbabaaabbababababaaa
+bbbbbbbaaaabbbbaaabbabaaa
+bbbababbbbaaaaaaaabbababaaababaabab
+ababaaaaaabaaab
+ababaaaaabbbaba
+baabbaaaabbaaaababbaababb
+abbbbabbbbaaaababbbbbbaaaababb
+aaaaabbaabaaaaababaa
+aaaabbaaaabbaaa
+aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
+babaaabbbaaabaababbaabababaaab
+aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba
+                "#;        
+
+        let (rule_set, messages) = parse(&input);
+        let result = count_matches(&rule_set, &messages);
+        assert_eq!(3, result);
     }
 }
