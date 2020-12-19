@@ -272,4 +272,45 @@ mod tests {
 
         assert_eq!(26, result);
     }
+
+    #[test]
+    fn test_number_occupied_seen() {
+        let input = 
+          r".......#.
+            ...#.....
+            .#.......
+            .........
+            ..#L....#
+            ....#....
+            .........
+            #........
+            ...#.....";
+
+        let floor_plan = load_floor_plan(&input);
+
+        let num_visible = VisiblePolicy::visible_occupied_seats(&floor_plan, 4, 5);
+
+        assert_eq!(8, num_visible);
+    }
+
+    #[test]
+    fn test_number_occupied_seen_2() {
+        let input = 
+          r".##.##.
+            #.#.#.#
+            ##...##
+            ...L...
+            ##...##
+            #.#.#.#
+            .##.##.";
+
+        let floor_plan = load_floor_plan(&input);
+
+        assert_eq!(9, floor_plan.len());
+        assert_eq!(9, floor_plan.first().unwrap().len());
+
+        let num_visible = VisiblePolicy::visible_occupied_seats(&floor_plan, 4, 4);
+
+        assert_eq!(0, num_visible);
+    }
 }

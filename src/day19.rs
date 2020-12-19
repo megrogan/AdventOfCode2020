@@ -1,6 +1,5 @@
 
 use crate::day19::Rule::*;
-use std::collections::HashMap;
 use std::fs;
 
 pub fn run() -> (usize, u64) {
@@ -8,56 +7,12 @@ pub fn run() -> (usize, u64) {
 
     let (rule_set, messages) = parse(&input);
 
-    let part1 = messages
-        .iter()
-        .filter_map(|m| solve(&rule_set, &rule_set.rules[0], m))
-        .filter(|v| v.len() == 0)
-        .count();
+    let part1 = count_matches(rule_set, messages);
 
     (
         part1,
         0
     )
-}
-
-fn solve<'a>(set: &RuleSet, rule: &Rule, message: &'a str) -> Option<&'a str> {
-
-    let s = message.len();
-
-    if s == 0 {
-        return Some(message);
-    }
-
-    match rule {
-        Letter(l) => {
-            if message.chars().nth(0).unwrap() == *l {
-                Some(&message[1..s])
-            } else {
-                None
-            }
-        },
-        Seq(v) => {
-            let mut m = message;
-            for i in v {
-                let r = &set.rules[*i];
-                let result = solve(set, r, m);
-                if result.is_none() {
-                    return None;
-                }
-                m = result.unwrap();
-            }
-            Some(m)
-        },
-        Or(r1, r2) => {
-
-            let result = solve(set, r1, message);
-            if result.is_some() {
-                return result;
-            } 
-
-            solve(set, r2, message)
-        }
-    }
 }
 
 fn parse(input: &str) -> (RuleSet, Vec<String>) {
@@ -83,6 +38,13 @@ fn parse(input: &str) -> (RuleSet, Vec<String>) {
         rules,
         messages
     )
+}
+
+fn count_matches(rule_set: RuleSet, messages: Vec<String>) -> usize {
+    messages
+        .iter()
+        .filter(|m| rule_set.is_match(m))
+        .count()
 }
 
 #[derive(Debug)]   
@@ -111,6 +73,51 @@ impl RuleSet {
             rules: rules.into_iter().map(|p| p.1).collect()
         }
     }
+
+    fn is_match(&self, message: &str) -> bool {
+        let result = self.solve(&self.rules[0], message);
+        result.is_some() && result.unwrap().len() == 0
+    }
+
+    fn solve<'a>(&self, rule: &Rule, message: &'a str) -> Option<&'a str> {
+
+        let s = message.len();
+    
+        if s == 0 {
+            return Some(message);
+        }
+    
+        match rule {
+            Letter(l) => {
+                if message.chars().nth(0).unwrap() == *l {
+                    Some(&message[1..s])
+                } else {
+                    None
+                }
+            },
+            Seq(v) => {
+                let mut m = message;
+                for i in v {
+                    let r = &self.rules[*i];
+                    let result = self.solve(r, m);
+                    if result.is_none() {
+                        return None;
+                    }
+                    m = result.unwrap();
+                }
+                Some(m)
+            },
+            Or(r1, r2) => {
+    
+                let result = self.solve(r1, message);
+                if result.is_some() {
+                    return result;
+                } 
+    
+                self.solve(r2, message)
+            }
+        }
+    }    
 
     fn parse_line(line: &str) -> Option<(usize, Rule)> {
 
@@ -168,9 +175,8 @@ aba
                 "#;
 
         let (rule_set, messages) = parse(&input);
-        let result = solve(&rule_set, &rule_set.rules[0], &messages[0]);
+        let result = rule_set.is_match(&messages[0]);
 
-        assert!(result.is_some());
-        assert_eq!(0, result.unwrap().len())
+        assert!(result);
     }
 }
